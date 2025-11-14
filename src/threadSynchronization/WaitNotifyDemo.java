@@ -3,6 +3,7 @@ package threadSynchronization;
 public class WaitNotifyDemo {
 
 	private static final Object LOCK = new Object();
+	private static boolean ready = false;
 
 	public static void main(String[] args) {
 		Thread threadOne = new Thread(() -> {
@@ -28,7 +29,11 @@ public class WaitNotifyDemo {
 	private static void one() throws InterruptedException {
 		synchronized (LOCK) {
 			System.out.println("Hello from method one ...");
-			LOCK.wait();
+
+			while (!ready) {
+				LOCK.wait();
+			}
+
 			System.out.println("Back again in method one!");
 		}
 	}
@@ -36,6 +41,7 @@ public class WaitNotifyDemo {
 	private static void two() throws InterruptedException {
 		synchronized (LOCK) {
 			System.out.println("Hello from method two ...");
+			ready = true;
 			LOCK.notify();
 			System.out.println("Hello from method two - even after notifying ...");
 		}
